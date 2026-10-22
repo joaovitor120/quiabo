@@ -129,9 +129,10 @@ begin
 end $$;
 
 -- ---------- QUEM TEM ACESSO ----------
--- Um único usuário, "daniel", usado pelos dois sócios.
--- No app ele digita só "daniel"; por dentro o login usa este e-mail.
--- A senha NÃO fica aqui: ela é cadastrada em Authentication > Users > Add user.
+-- Dois usuários, "daniel" e "jorge", que veem e lançam os mesmos dados.
+-- No app cada um digita só o nome; por dentro o login usa estes e-mails.
+-- As senhas NÃO ficam aqui: elas são cadastradas em Authentication > Users > Add user.
 insert into public.socios (email, nome) values
-  ('daniel@painel-quiabo.app', 'Daniel')
+  ('daniel@painel-quiabo.app', 'Daniel'),
+  ('jorge@painel-quiabo.app', 'Jorge')
 on conflict (email) do update set nome = excluded.nome;
