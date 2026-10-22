@@ -1,0 +1,30 @@
+name: Cotação do quiabo
+
+on:
+  schedule:
+    # 18:47 de Brasília (21:47 UTC), de segunda a sábado
+    - cron: "47 21 * * 1-6"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar coletor da CEASA
+        run: pip install "git+https://github.com/SamuelScar/cotacoes-ceasa-scraper.git@e4ea37d2657575ddaab4561b4da8225a5033cf5a"
+
+      - name: Buscar e gravar a cotação
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python scripts/atualizar_cotacao.py

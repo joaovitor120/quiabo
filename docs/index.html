@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Painel do Quiabo</title>
+<meta name="description" content="Cotação do quiabo na CEASA-ES, colheita, vendas e caixa da roça.">
+<meta name="theme-color" content="#3d6b28">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Quiabo">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<template id="logo-tpl">
+  <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="var(--flower-soft)"/><path d="M12 30 C16 22, 22 14, 29 9 C30 15, 25 25, 14 31 Z" fill="var(--leaf)"/><circle cx="29" cy="9" r="2.4" fill="var(--eye)"/></svg>
+</template>
+
+<!-- ===== Login ===== -->
+<section class="login" id="tela-login" hidden>
+  <form class="login-card" id="f-login" autocomplete="on">
+    <div class="logo"><span data-logo></span><div><h1>Painel do Quiabo</h1><span class="muted" style="font-size:.88rem">Entre para ver a roça</span></div></div>
+    <label>Usuário<input id="l-user" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+    <label>Senha<input id="l-pass" name="password" type="password" autocomplete="current-password" required></label>
+    <span class="hint" id="l-hint"></span>
+    <button class="btn" type="submit" id="l-btn">Entrar</button>
+  </form>
+</section>
+
+<!-- ===== App ===== -->
+<div id="tela-app" hidden>
+  <header class="top">
+    <div class="top-in">
+      <div class="brand"><span data-logo></span><h1>Painel do Quiabo</h1></div>
+      <div class="top-actions">
+        <span class="sync" id="sync"><span class="dot" id="sync-dot"></span><span id="sync-txt">Carregando…</span></span>
+        <button class="btn ghost" type="button" id="btn-install" hidden>Instalar</button>
+        <button class="btn ghost" type="button" id="btn-sair">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="banner" id="banner" hidden></div>
+    <div class="banner" id="ios-hint" hidden>Para instalar no iPhone: toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.</div>
+
+    <!-- Início -->
+    <section class="view" id="v-inicio" data-view="inicio">
+      <div class="quote">
+        <div class="quote-main">
+          <span class="eyebrow">Quiabo extra · CEASA Grande Vitória</span>
+          <div class="big num" id="q-price">—<small>/kg</small></div>
+          <div class="chips"><span class="chip flat" id="q-var">—</span><span class="chip" id="q-sit">—</span></div>
+          <span class="muted" style="font-size:.85rem" id="q-date">Boletim de —</span>
+        </div>
+        <div class="quote-stats">
+          <div class="qs"><span class="eyebrow">Mín a máx</span><span class="v" id="q-range">—</span><span class="s">faixa do dia</span></div>
+          <div class="qs"><span class="eyebrow">Média 30 dias</span><span class="v" id="q-m30">—</span><span class="s" id="q-m30s">preço comum</span></div>
+          <div class="qs"><span class="eyebrow">Média 12 meses</span><span class="v" id="q-m12">—</span><span class="s" id="q-m12s">preço comum</span></div>
+          <div class="qs"><span class="eyebrow">Hoje no ano</span><span class="v" id="q-pct">—</span><span class="s" id="q-pcts">posição no último ano</span></div>
+        </div>
+      </div>
+      <div class="kpis">
+        <div class="kpi hl"><span class="eyebrow">Preço em uso</span><span class="v" id="k-preco">—</span><span class="s" id="k-preco-s">—</span></div>
+        <div class="kpi"><span class="eyebrow">Quiabo disponível</span><span class="v" id="k-estoque">—</span><span class="s" id="k-estoque-s">entradas menos vendas</span></div>
+        <div class="kpi"><span class="eyebrow">Valor do disponível</span><span class="v" id="k-valor">—</span><span class="s">kg × preço em uso</span></div>
+        <div class="kpi"><span class="eyebrow">Vendas no mês</span><span class="v" id="k-vendas">—</span><span class="s" id="k-vendas-s">—</span></div>
+        <div class="kpi"><span class="eyebrow">Despesas no mês</span><span class="v" id="k-desp">—</span><span class="s" id="k-desp-s">—</span></div>
+        <div class="kpi"><span class="eyebrow">Saldo do mês</span><span class="v" id="k-saldo">—</span><span class="s">vendas − despesas</span></div>
+        <div class="kpi"><span class="eyebrow">A receber</span><span class="v" id="k-receber">—</span><span class="s" id="k-receber-s">vendas não pagas</span></div>
+      </div>
+    </section>
+
+    <!-- Preços -->
+    <section class="view" id="v-precos" data-view="precos" hidden>
+      <div class="sec-head">
+        <h2>Histórico na CEASA</h2>
+        <div class="seg" role="group" aria-label="Período" id="range">
+          <button type="button" data-r="30" aria-pressed="false">30 d</button>
+          <button type="button" data-r="90" aria-pressed="true">90 d</button>
+          <button type="button" data-r="365" aria-pressed="false">12 m</button>
+          <button type="button" data-r="all" aria-pressed="false">Tudo</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="chart-box" id="chart"><div class="empty" id="chart-empty">O histórico aparece aqui quando os preços carregarem.</div><div class="tip" id="tip" hidden></div></div>
+        <div class="legend">
+          <span><i style="background:var(--band)"></i>Mín–máx</span>
+          <span><i style="background:var(--leaf);height:3px"></i>Comum</span>
+          <span id="lg-own" hidden><i style="border-top:2px dashed var(--eye);height:0"></i>Meu preço</span>
+          <span><i style="background:var(--flower);border-radius:50%;width:10px"></i>Suas vendas</span>
+        </div>
+      </div>
+
+      <h2>Preço para os cálculos</h2>
+      <div class="card" style="display:flex;flex-direction:column;gap:14px">
+        <div class="price-now"><span class="eyebrow">Usando agora</span><div class="v num" id="p-now">—</div><span class="muted" id="p-now-s">—</span></div>
+        <div class="seg full" role="group" aria-label="Fonte do preço" id="p-src">
+          <button type="button" data-src="ceasa" aria-pressed="true">Preço da CEASA</button>
+          <button type="button" data-src="proprio" aria-pressed="false">Meu preço</button>
+        </div>
+        <label id="p-ceasa-opts">Referência da CEASA
+          <select id="p-ref">
+            <option value="min">Mínimo do dia</option>
+            <option value="comum" selected>Comum (mais negociado)</option>
+            <option value="max">Máximo do dia</option>
+          </select>
+        </label>
+        <div id="p-own-opts" class="two" hidden>
+          <label>Meu preço (R$/kg)<input id="p-own" class="num" type="number" inputmode="decimal" min="0" step="0.01" placeholder="ex.: 6,50"></label>
+          <button class="btn" type="button" id="p-own-save" style="align-self:end">Salvar</button>
+        </div>
+        <label>Peso da caixa (kg)<input id="p-cx" class="num" type="number" inputmode="decimal" min="1" step="0.5" value="14"></label>
+        <span class="hint" id="p-hint">O peso da caixa converte lançamentos feitos em caixas. A CEASA-ES usava a caixa de 14 kg.</span>
+      </div>
+    </section>
+
+    <!-- Lançar -->
+    <section class="view" id="v-lancar" data-view="lancar" hidden>
+      <div class="seg full" role="group" aria-label="Tipo de lançamento" id="lanc-tipo">
+        <button type="button" data-t="col" aria-pressed="true">Entrada</button>
+        <button type="button" data-t="ven" aria-pressed="false">Venda</button>
+        <button type="button" data-t="des" aria-pressed="false">Despesa</button>
+      </div>
+
+      <form class="card" id="f-col" autocomplete="off">
+        <h3>Entrada de quiabo</h3>
+        <div class="two">
+          <label>Data<input id="c-data" type="date" required></label>
+          <label>Unidade<select id="c-un"><option value="kg">Quilos (kg)</option><option value="cx">Caixas</option></select></label>
+        </div>
+        <label><span id="c-q-lbl">Quantidade (kg)</span><input id="c-q" class="num" type="number" inputmode="decimal" min="0" step="0.1" required placeholder="ex.: 120"></label>
+        <label>Talhão / observação<input id="c-obs" type="text" maxlength="120" placeholder="ex.: talhão 2, colheita da manhã"></label>
+        <span class="hint" id="c-hint">Fica registrado em kg; caixas são convertidas pelo peso da caixa.</span>
+        <button class="btn" type="submit">Lançar entrada</button>
+      </form>
+
+      <form class="card" id="f-ven" autocomplete="off" hidden>
+        <h3>Venda</h3>
+        <div class="two">
+          <label>Data<input id="v-data" type="date" required></label>
+          <label>Quantidade (kg)<input id="v-kg" class="num" type="number" inputmode="decimal" min="0" step="0.1" required placeholder="ex.: 80"></label>
+        </div>
+        <div class="two">
+          <label>Preço (R$/kg)<input id="v-preco" class="num" type="number" inputmode="decimal" min="0" step="0.01" required></label>
+          <label>Total<input id="v-total" class="num" type="text" readonly tabindex="-1" value="R$ 0,00"></label>
+        </div>
+        <label>Comprador<input id="v-cli" type="text" maxlength="80" placeholder="ex.: Mercado Bom Preço"></label>
+        <label class="check"><input id="v-pago" type="checkbox" checked> Já recebido</label>
+        <span class="hint" id="v-hint">O preço vem preenchido com o preço em uso.</span>
+        <button class="btn" type="submit">Lançar venda</button>
+      </form>
+
+      <form class="card" id="f-des" autocomplete="off" hidden>
+        <h3>Despesa</h3>
+        <div class="two">
+          <label>Data<input id="d-data" type="date" required></label>
+          <label>Valor (R$)<input id="d-valor" class="num" type="number" inputmode="decimal" min="0" step="0.01" required placeholder="ex.: 350"></label>
+        </div>
+        <label>Categoria
+          <select id="d-cat">
+            <option>Mão de obra</option><option>Adubo e defensivos</option><option>Sementes e mudas</option>
+            <option>Caixas e embalagens</option><option>Frete</option><option>Irrigação e energia</option><option>Outros</option>
+          </select>
+        </label>
+        <label>Descrição<input id="d-desc" type="text" maxlength="120" placeholder="ex.: diária de colheita"></label>
+        <span class="hint" id="d-hint"></span>
+        <button class="btn" type="submit">Lançar despesa</button>
+      </form>
+    </section>
+
+    <!-- Finanças -->
+    <section class="view" id="v-financas" data-view="financas" hidden>
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:8px"><h3>Vendas e despesas por mês</h3><span class="muted" style="font-size:.8rem">últimos 6 meses</span></div>
+        <div class="chart-box" id="bars"><div class="empty">Os meses aparecem depois da primeira venda ou despesa.</div></div>
+        <div class="legend"><span><i style="background:var(--flower)"></i>Vendas</span><span><i style="background:var(--eye)"></i>Despesas</span></div>
+      </div>
+      <div class="card">
+        <div class="sec-head" style="margin-bottom:4px"><h3>Movimentações</h3></div>
+        <div class="seg full" role="group" aria-label="Filtro" id="mv-filter" style="margin-bottom:6px">
+          <button type="button" data-f="todas" aria-pressed="true">Todas</button>
+          <button type="button" data-f="colheita" aria-pressed="false">Entradas</button>
+          <button type="button" data-f="venda" aria-pressed="false">Vendas</button>
+          <button type="button" data-f="despesa" aria-pressed="false">Despesas</button>
+        </div>
+        <ul class="moves" id="mv-list"></ul>
+        <div class="empty" id="mv-empty">Nenhum lançamento ainda. Use a aba Lançar para registrar a primeira entrada, venda ou despesa.</div>
+      </div>
+      <footer>Cotação: boletim diário da CEASA-ES, mercado Grande Vitória (Cariacica), quiabo extra, R$/kg. Atualizada de segunda a sábado no fim da tarde.</footer>
+    </section>
+  </main>
+
+  <nav class="tabs" aria-label="Seções">
+    <div class="tabs-in">
+      <button type="button" data-go="inicio" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Início</button>
+      <button type="button" data-go="precos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M4 16l5-6 4 3 7-8"/></svg>Preços</button>
+      <button type="button" data-go="lancar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Lançar</button>
+      <button type="button" data-go="financas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg>Finanças</button>
+    </div>
+  </nav>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
